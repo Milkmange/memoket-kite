@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible KITE defect
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please remove credentials and private conversation content before submitting.
+  - type: input
+    id: version
+    attributes:
+      label: KITE version or commit
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Memory API, extraction, retrieval, answering, Codebook format, benchmark, packaging]
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Include the command, minimal non-sensitive input, and complete traceback.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, operating system, model ID, and relevant package versions.
+    validations:
+      required: true

@@ -1,0 +1,89 @@
+[
+ {
+  "question_id": "synth-user",
+  "question_type": "single-session-user",
+  "question": "What did I plant in the garden?",
+  "question_date": "2023/05/30 (Tue) 23:40",
+  "answer": "Basil",
+  "answer_session_ids": [
+   "synth-user-S1"
+  ],
+  "haystack_dates": [
+   "2023/05/01 (Mon) 10:00"
+  ],
+  "haystack_session_ids": [
+   "synth-user-S1"
+  ],
+  "haystack_sessions": [
+   [
+    {
+     "role": "user",
+     "content": "I planted basil in the garden today.",
+     "has_answer": true
+    },
+    {
+     "role": "assistant",
+     "content": "Basil does well in early summer."
+    }
+   ]
+  ]
+ },
+ {
+  "question_id": "synth-pref",
+  "question_type": "single-session-preference",
+  "question": "What should I plant next?",
+  "question_date": "2023/05/30 (Tue) 23:40",
+  "answer": "More basil",
+  "answer_session_ids": [
+   "synth-pref-S1"
+  ],
+  "haystack_dates": [
+   "2023/05/01 (Mon) 10:00"
+  ],
+  "haystack_session_ids": [
+   "synth-pref-S1"
+  ],
+  "haystack_sessions": [
+   [
+    {
+     "role": "user",
+     "content": "I planted basil in the garden today.",
+     "has_answer": true
+    },
+    {
+     "role": "assistant",
+     "content": "Basil does well in early summer."
+    }
+   ]
+  ]
+ },
+ {
+  "question_id": "synth-user_abs",
+  "question_type": "single-session-user",
+  "question": "What did I name my boat?",
+  "question_date": "2023/05/30 (Tue) 23:40",
+  "answer": "abstention",
+  "answer_session_ids": [
+   "synth-user_abs-S1"
+  ],
+  "haystack_dates": [
+   "2023/05/01 (Mon) 10:00"
+  ],
+  "haystack_session_ids": [
+   "synth-user_abs-S1"
+  ],
+  "haystack_sessions": [
+   [
+    {
+     "role": "user",
+     "content": "I planted basil in the garden today.",
+     "has_answer": true
+    },
+    {
+     "role": "assistant",
+     "content": "Basil does well in early summer."
+    }
+   ]
+  ]
+ }
+]

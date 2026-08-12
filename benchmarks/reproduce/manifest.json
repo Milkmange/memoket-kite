@@ -1,0 +1,59 @@
+{
+  "benchmarks": {
+    "locomo": {
+      "asset": "memoket-kite-v0.1.0-locomo.tar.gz",
+      "codebook_path": "artifacts/codebooks/locomo",
+      "codebooks": 10,
+      "denominator": 1540,
+      "metric": "accuracy",
+      "result_path": "artifacts/results/locomo-freeze2-0811/judged.jsonl",
+      "result_rows": 1540,
+      "score": 0.935064935064935
+    },
+    "longmemeval": {
+      "asset": "memoket-kite-v0.1.0-longmemeval-cleaned.tar.gz",
+      "codebook_path": "artifacts/codebooks/longmemeval",
+      "codebooks": 500,
+      "denominator": 500,
+      "metric": "accuracy",
+      "result_path": "artifacts/results/longmemeval-freeze2-0811/judged.jsonl",
+      "result_rows": 500,
+      "score": 0.856
+    }
+  },
+  "datasets": {
+    "locomo": {
+      "derived_artifacts": "Codebooks and result rows built from this dataset are derived works and carry its licence, not Apache-2.0. See LICENSE-DATA.md.",
+      "license": "CC BY-NC 4.0",
+      "license_source": "https://github.com/snap-research/locomo",
+      "path": "artifacts/datasets/locomo/locomo10.json",
+      "revision": "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376",
+      "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4",
+      "url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/data/locomo10.json"
+    },
+    "longmemeval": {
+      "derived_artifacts": "Codebooks and result rows built from this dataset are derived works and carry its licence. See LICENSE-DATA.md.",
+      "license": "MIT",
+      "license_source": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned",
+      "path": "artifacts/datasets/longmemeval/longmemeval_s_cleaned.json",
+      "revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+      "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+      "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_s_cleaned.json"
+    }
+  },
+  "models": {
+    "answer": "gpt-4.1-mini",
+    "compile": "gpt-4.1-mini",
+    "extraction": "gpt-4.1-mini",
+    "judge": "gpt-4.1-mini",
+    "note": "These are the identifiers the runs were made with, and `package.py` refuses to release results whose manifests say otherwise. `gpt-4.1-mini` is a floating alias; it served gpt-4.1-mini-2025-04-14 at the time of measurement. Pinning the snapshot in the run would change the plan-cache key and invalidate every compiled plan behind these numbers, so the alias is recorded as used rather than rewritten after the fact."
+  },
+  "release": {
+    "git_commit": null,
+    "python": "3.10-3.12",
+    "status": "sealed_awaiting_packaging",
+    "version": "v0.1.0"
+  },
+  "repository": "https://github.com/memoket/KITE",
+  "schema_version": 1
+}

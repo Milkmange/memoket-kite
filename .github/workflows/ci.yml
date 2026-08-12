@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Tests and builds only read the repository; a compromised dependency in this
+# job must not be able to write to it.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -e ".[dev,benchmark]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - name: Import modules without side effects
+        run: |
+          python - <<'PY'
+          import contextlib
+          import importlib
+          import io
+          import os
+
+          before = dict(os.environ)
+          modules = [
+              "memoket_kite",
+              "benchmarks.locomo.build",
+              "benchmarks.locomo.evaluate",
+              "benchmarks.locomo.score",
+              "benchmarks.longmemeval.build",
+              "benchmarks.longmemeval.evaluate",
+              "benchmarks.longmemeval.score",
+              "benchmarks.tools.leak_check",
+          ]
+          output = io.StringIO()
+          with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+              for name in modules:
+                  importlib.import_module(name)
+          assert output.getvalue() == ""
+          assert dict(os.environ) == before
+          PY
+      - run: pytest --cov=memoket_kite --cov-report=term-missing --cov-fail-under=75
+      - name: Offline examples
+        run: |
+          python examples/inspect_codebook.py
+          python examples/temporal_reasoning.py
+      - name: Benchmark entrypoint smoke tests
+        run: |
+          python -m benchmarks.locomo.build --help
+          python -m benchmarks.locomo.evaluate --help
+          python -m benchmarks.locomo.score --help
+          python -m benchmarks.longmemeval.build --help
+          python -m benchmarks.longmemeval.evaluate --help
+          python -m benchmarks.longmemeval.score --help
+      - run: python -m compileall -q src benchmarks examples
+      - run: python -m build
+      - name: Verify wheel contents
+        run: |
+          python - <<'PY'
+          import glob
+          import zipfile
+
+          wheel = glob.glob("dist/*.whl")[0]
+          names = zipfile.ZipFile(wheel).namelist()
+          assert any(name.startswith("memoket_kite/") for name in names)
+          forbidden = ("benchmarks/", "research/", "artifacts/", "examples/")
+          assert not any(name.startswith(forbidden) for name in names)
+          PY
+      - name: Install the wheel where the source tree cannot shadow it
+        run: |
+          # Everything above ran against the editable install. A wheel that
+          # ships without a subpackage would still pass all of it, so the
+          # built artifact is installed into a clean venv, away from the
+          # repo, and every subpackage is imported for real.
+          python -m venv /tmp/wheelsmoke
+          /tmp/wheelsmoke/bin/pip install --quiet dist/*.whl
+          cd /tmp
+          /tmp/wheelsmoke/bin/python - <<'PY'
+          import importlib
+          import pkgutil
+          from importlib.metadata import version
+
+          import memoket_kite
+
+          assert memoket_kite.__version__ == version("memoket-kite")
+          discovered = [
+              module.name
+              for module in pkgutil.walk_packages(
+                  memoket_kite.__path__, prefix="memoket_kite."
+              )
+          ]
+          assert len(discovered) >= 20, discovered
+          for name in discovered:
+              importlib.import_module(name)
+          assert memoket_kite.Memory
+          assert memoket_kite.Answer
+          assert memoket_kite.KiteError
+          PY
+          /tmp/wheelsmoke/bin/pip check

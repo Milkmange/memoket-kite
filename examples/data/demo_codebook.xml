@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<codebook id="demo" speakers="alice bob">
+  <vocab>
+    <topic code="activities" status="canonical" parents="" born="" />
+    <topic code="marathon_training" status="canonical" parents="activities" born="s1">
+      <use unit="s1" bucket="2026-01" />
+    </topic>
+    <topic code="travel" status="canonical" parents="" born="" />
+    <topic code="race_travel" status="canonical" parents="travel" born="s2">
+      <use unit="s2" bucket="2026-02" />
+    </topic>
+    <entity code="shanghai_marathon" type="event" name="Shanghai Marathon" />
+    <entity code="shanghai" type="place" name="Shanghai" />
+  </vocab>
+  <timeline>
+    <session id="s1" date="2026-01-10" t="2026-01-10T09:00" title="Training plan" dur="5m">
+      <fact id="s1F1" t="2026-10-18" kind="plan" who="alice" conf="high"
+            topics="marathon_training" entities="shanghai_marathon"
+            event="competition" src="s1L1">Alice is training for the Shanghai Marathon on 18 October 2026.</fact>
+      <line id="s1L1" who="alice">I started training for the Shanghai Marathon on October 18.</line>
+    </session>
+    <session id="s2" date="2026-02-02" t="2026-02-02T18:00" title="Travel details" dur="4m">
+      <fact id="s2F1" t="2026-10" kind="plan" who="alice" conf="high"
+            topics="race_travel" entities="shanghai"
+            place="shanghai" src="s2L1">Alice plans to travel to Shanghai for the race in October 2026.</fact>
+      <line id="s2L1" who="alice">I will travel to Shanghai for the race in October.</line>
+    </session>
+  </timeline>
+</codebook>
+

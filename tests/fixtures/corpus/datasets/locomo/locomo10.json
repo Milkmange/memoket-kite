@@ -1,0 +1,43 @@
+[
+ {
+  "sample_id": "synth-conv",
+  "conversation": {
+   "speaker_a": "Ada",
+   "speaker_b": "Bo",
+   "session_1_date_time": "10:00 am on 1 May, 2023",
+   "session_1": [
+    {
+     "speaker": "Ada",
+     "dia_id": "D1:1",
+     "text": "I planted basil in the garden today."
+    },
+    {
+     "speaker": "Bo",
+     "dia_id": "D1:2",
+     "text": "Basil does well in early summer."
+    }
+   ]
+  },
+  "event_summary": {},
+  "observation": {},
+  "session_summary": {},
+  "qa": [
+   {
+    "question": "What did Ada plant?",
+    "answer": "Basil",
+    "evidence": [
+     "D1:1"
+    ],
+    "category": 4
+   },
+   {
+    "question": "When did Ada plant it?",
+    "answer": "1 May 2023",
+    "evidence": [
+     "D1:1"
+    ],
+    "category": 2
+   }
+  ]
+ }
+]

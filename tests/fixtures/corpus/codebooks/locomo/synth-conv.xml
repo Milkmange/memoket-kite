@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<codebook id="synth-conv" speakers="Ada Bo">
+  <vocab>
+    <topic code="home_garden" status="canonical" parents="" born="">
+      <use unit="synth-conv-S1" bucket="2023-05" />
+    </topic>
+    <entity code="basil" status="canonical" aliases="" born="synth-conv-S1" />
+  </vocab>
+  <timeline>
+    <session id="synth-conv-S1" date="2023-05-01" t="10:00" title="the garden" dur="5m">
+      <line id="D1:1" who="ada">I planted basil in the garden today.</line>
+      <line id="D1:2" who="bo">Basil does well in early summer.</line>
+      <fact id="synth-conv-S1F1" t="2023-05-01" kind="event" who="ada" conf="high"
+            topics="home_garden" entities="basil" src="D1:1"
+            obj="basil">planted basil in the garden</fact>
+    </session>
+  </timeline>
+</codebook>

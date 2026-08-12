@@ -1,0 +1,37 @@
+name: Benchmark reproduction
+description: Report a discrepancy using the pinned reproduction contract
+title: "[Reproduction]: "
+labels: [reproducibility]
+body:
+  - type: input
+    id: commit
+    attributes:
+      label: KITE commit
+    validations:
+      required: true
+  - type: dropdown
+    id: benchmark
+    attributes:
+      label: Benchmark
+      options: [LoCoMo, LongMemEval cleaned]
+    validations:
+      required: true
+  - type: textarea
+    id: manifest
+    attributes:
+      label: Manifest and hashes
+      description: Paste dataset revision/hash, artifact hash, and model IDs. Do not attach raw datasets.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Commands and output
+    validations:
+      required: true
+  - type: textarea
+    id: discrepancy
+    attributes:
+      label: Observed discrepancy
+    validations:
+      required: true
