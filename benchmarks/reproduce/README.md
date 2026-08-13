@@ -2,26 +2,12 @@
 
 The reproduction contract has one source of truth:
 [`manifest.json`](manifest.json). It pins official dataset bytes, model IDs,
-expected artifact counts, metric names, and—after a full release run—the exact
-score and release-asset hashes.
-
-## Verify a published release without an API key
-
-```bash
-python -m benchmarks.reproduce.prepare datasets
-python -m benchmarks.reproduce.prepare artifacts
-python -m benchmarks.reproduce.verify locomo
-python -m benchmarks.reproduce.verify longmemeval
-```
-
-This path downloads the pinned upstream datasets and generated KITE artifacts.
-It checks their hashes, recomputes each dataset-plus-Codebook corpus digest,
-counts Codebooks and judged rows, and recomputes the published aggregate
-locally.
+expected artifact counts, metric names, and reported scores.
 
 ## Rebuild from official data
 
 ```bash
+python -m pip install -e ".[benchmark]"
 python -m benchmarks.reproduce.prepare datasets
 cp .env.example .env
 # Set OPENAI_API_KEY; optionally set OPENAI_BASE_URL.
@@ -35,14 +21,26 @@ Use `bash .../locomo.sh resume` or `bash .../longmemeval.sh resume` after an
 interrupted run. Failures are never swallowed: the stage exits nonzero and
 records failed IDs beside its output.
 
-## Build release archives
+## Verify the reference reproduction
 
-After both full runs and offline score checks succeed:
+With the default `TAG` and `MODEL`, the scripts write to the paths declared in
+`manifest.json`. After both reference runs succeed:
 
 ```bash
-python -m build
-python -m benchmarks.reproduce.package v0.1.0
+python -m benchmarks.reproduce.verify locomo
+python -m benchmarks.reproduce.verify longmemeval
 ```
 
-See [`../../docs/reproducibility.md`](../../docs/reproducibility.md) for the
-artifact layout and release checklist.
+The verifier checks the reference paths, local manifests, corpus digests,
+expected Codebook and row counts, and reported aggregates. For a run made with
+a custom `TAG` or `MODEL`, validate its seal and recompute its own metrics with
+the corresponding scorer instead:
+
+```bash
+python -m benchmarks.locomo.score --tag my-run --judge-model gpt-4.1-mini --offline
+python -m benchmarks.longmemeval.score --tag my-run --judge-model gpt-4.1-mini --offline
+```
+
+See
+[`../../docs/reproducibility.md`](../../docs/reproducibility.md) for the complete
+workflow.

@@ -1,7 +1,20 @@
 # Contributing to KITE
 
-KITE is research software. Clear behavior, traceable evidence, and reproducible
-evaluation take priority over expanding the API surface.
+Thank you for contributing to KITE. Clear behavior, traceable evidence, and
+reproducible evaluation take priority over expanding the API surface.
+
+## Before you start
+
+- Search [existing issues](https://github.com/memoket/memoket-kite/issues) before
+  opening a new one.
+- Use the appropriate form for a
+  [bug](https://github.com/memoket/memoket-kite/issues/new?template=bug.yml),
+  [feature request](https://github.com/memoket/memoket-kite/issues/new?template=feature.yml),
+  or [benchmark discrepancy](https://github.com/memoket/memoket-kite/issues/new?template=reproduction.yml).
+- Discuss public API or benchmark protocol changes in an issue before starting
+  a large implementation.
+- Report security vulnerabilities privately through
+  [GitHub Security Advisories](https://github.com/memoket/memoket-kite/security/advisories/new).
 
 ## Development setup
 
@@ -14,9 +27,11 @@ pytest
 
 ## Pull requests
 
+- Keep each pull request focused and explain both the change and its motivation.
 - Keep algorithm changes separate from mechanical cleanup and documentation.
 - Add deterministic regression coverage for retrieval, trace, serialization,
   and public API changes.
+- Update user-facing documentation when behavior or public APIs change.
 - Do not introduce import-time file scans, environment mutations, network
   calls, or output.
 - Keep all generated datasets, Codebooks, caches, results, and reports under
@@ -27,15 +42,16 @@ pytest
 ## Benchmark and data changes
 
 Benchmark claims must identify the exact dataset revision and SHA256, model IDs,
-prompt/protocol changes, denominator, and generated artifact hashes. Update the
-reproduction manifest and add an offline metric test. Do not compare scores
-from different dataset revisions as if they were the same experiment.
+prompt/protocol changes, denominator, and local generated-artifact hashes.
+Update the reproduction manifest and add an offline metric test. Do not compare
+scores from different dataset revisions as if they were the same experiment.
 
 Before adding any corpus or fixture, confirm that its license permits
-redistribution. Official benchmark datasets remain external; KITE releases
-contain only generated Codebooks, caches, results, manifests, and checksums.
+redistribution. Official benchmark datasets and generated benchmark outputs
+remain local under `artifacts/`; do not commit or upload them.
 
 ## Security and privacy
 
 Remove private conversational content from bug reports and fixtures. Report
-vulnerabilities through the process in [`SECURITY.md`](SECURITY.md).
+vulnerabilities through the process in
+[`SECURITY.md`](https://github.com/memoket/memoket-kite/blob/main/SECURITY.md).

@@ -46,7 +46,8 @@
     "compile": "gpt-4.1-mini",
     "extraction": "gpt-4.1-mini",
     "judge": "gpt-4.1-mini",
-    "note": "These are the identifiers the runs were made with, and `package.py` refuses to release results whose manifests say otherwise. `gpt-4.1-mini` is a floating alias; it served gpt-4.1-mini-2025-04-14 at the time of measurement. Pinning the snapshot in the run would change the plan-cache key and invalidate every compiled plan behind these numbers, so the alias is recorded as used rather than rewritten after the fact."
+    "resolved_snapshot": "gpt-4.1-mini-2025-04-14",
+    "note": "The reference runs invoked gpt-4.1-mini, which resolved to the recorded snapshot at measurement time."
   },
   "release": {
     "git_commit": null,
@@ -54,6 +55,6 @@
     "status": "sealed_awaiting_packaging",
     "version": "v0.1.0"
   },
-  "repository": "https://github.com/memoket/KITE",
+  "repository": "https://github.com/memoket/memoket-kite",
   "schema_version": 1
 }

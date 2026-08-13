@@ -6,6 +6,13 @@ body:
   - type: markdown
     attributes:
       value: Please remove credentials and private conversation content before submitting.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues for this problem.
+          required: true
   - type: input
     id: version
     attributes:
@@ -30,6 +37,12 @@ body:
     id: expected
     attributes:
       label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
     validations:
       required: true
   - type: textarea

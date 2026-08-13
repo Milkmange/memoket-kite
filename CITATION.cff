@@ -5,6 +5,6 @@ type: software
 version: 0.1.0
 authors:
   - name: "Memoket Inc."
-repository-code: "https://github.com/memoket/KITE"
+repository-code: "https://github.com/memoket/memoket-kite"
 license: Apache-2.0
 copyright: "Copyright 2026 Memoket Inc."

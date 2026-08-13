@@ -25,10 +25,10 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/memoket/KITE"
-Repository = "https://github.com/memoket/KITE"
-Documentation = "https://github.com/memoket/KITE/tree/main/docs"
-Issues = "https://github.com/memoket/KITE/issues"
+Homepage = "https://github.com/memoket/memoket-kite"
+Repository = "https://github.com/memoket/memoket-kite"
+Documentation = "https://github.com/memoket/memoket-kite/tree/main/docs"
+Issues = "https://github.com/memoket/memoket-kite/issues"
 
 [project.optional-dependencies]
 benchmark = ["tiktoken>=0.7"]

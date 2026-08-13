@@ -1,13 +1,13 @@
 <div align="center">
 
-<a href="https://memoket.ai/"><img src="assets/kite-banner.png" width="830" alt="Memoket × KITE: the memory inside Memoket"></a>
+<a href="https://memoket.ai/"><img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/kite-banner.png" width="830" alt="Memoket × KITE: the memory inside Memoket"></a>
 
 ### Follow the thread, not the nearest match.
 
 KITE by Memoket turns conversations into structured, source-backed facts, then answers questions
 with the exact moment they came from attached.
 
-<a href="https://memoket.ai/"><img src="assets/memoket-website-badge-navy.svg" alt="Memoket website"></a>
+<a href="https://memoket.ai/"><img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/memoket-website-badge-navy.svg" alt="Memoket website"></a>
 <a href="https://discord.com/invite/tFh4nur4Vn"><img src="https://img.shields.io/badge/-Discord-232B3A?style=for-the-badge&logo=discord&logoColor=white" alt="Join Memoket on Discord"></a>
 <a href="https://x.com/Memoket_AI"><img src="https://img.shields.io/badge/-X-232B3A?style=for-the-badge&logo=x&logoColor=white" alt="Follow Memoket on X"></a>
 <a href="https://www.instagram.com/memoket_ai/"><img src="https://img.shields.io/badge/-Instagram-232B3A?style=for-the-badge&logo=instagram&logoColor=white" alt="Follow Memoket on Instagram"></a>
@@ -18,7 +18,7 @@ with the exact moment they came from attached.
 <br>
 
 <p align="center">
-  <img src="assets/kite-architecture-flow.png" width="100%" alt="KITE at a glance: conversations become source-linked memory facts, memory settles under a governed topic map, a question compiles to an inspectable plan, and the answer arrives with receipts.">
+  <img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/kite-architecture-flow.png" width="100%" alt="KITE at a glance: conversations become source-linked memory facts, memory settles under a governed topic map, a question compiles to an inspectable plan, and the answer arrives with receipts.">
 </p>
 
 ## 💡 Why KITE by Memoket
@@ -49,7 +49,7 @@ KITE by Memoket reads what a question means, not how it sounds.
 | **Runtime stack** | embeddings · vector DB · rerankers | one portable, topic-indexed file |
 | **Ask again tomorrow** | depends on the index that day | the same plan walks the same steps |
 
-<img src="assets/string-b.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/string-b.svg" width="100%" alt="">
 
 <a id="how-it-works"></a>
 
@@ -130,7 +130,7 @@ When something was never said, the search comes back genuinely empty, and KITE s
 </tr>
 </table>
 
-<img src="assets/string-a.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/string-a.svg" width="100%" alt="">
 
 <a id="quick-start"></a>
 
@@ -139,12 +139,12 @@ When something was never said, the search comes back genuinely empty, and KITE s
 ### 1. Install and configure
 
 ```bash
-git clone https://github.com/memoket/kite.git
-cd kite
-pip install memoket-kite
+python -m pip install memoket-kite
 export OPENAI_API_KEY="sk-..."
 mkdir -p artifacts
-cp examples/data/demo_codebook.xml artifacts/quickstart.xml
+curl -fsSL \
+  https://raw.githubusercontent.com/memoket/memoket-kite/main/examples/data/demo_codebook.xml \
+  -o artifacts/quickstart.xml
 ```
 
 Using another OpenAI-compatible provider? Set `OPENAI_BASE_URL` as well.
@@ -194,9 +194,11 @@ for fact in result.evidence:
 print(memory.answer("Where did the user move?"))  # just the text
 ```
 
-Full reference in [docs/api.md](docs/api.md); more runnable examples in [`examples/`](examples/).
+Full reference in [docs/api.md](https://github.com/memoket/memoket-kite/blob/main/docs/api.md);
+more runnable examples in
+[`examples/`](https://github.com/memoket/memoket-kite/tree/main/examples).
 
-<img src="assets/string-b.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/string-b.svg" width="100%" alt="">
 
 <a id="benchmarks"></a>
 
@@ -216,35 +218,38 @@ context than any capable rival.
 </div>
 
 All systems are evaluated under one shared protocol, with `gpt-4.1-mini` as the
-common reader and judge; the exact rubric ships in
-[`benchmarks/*/protocol.py`](benchmarks). Reader context is the mean per-question
-evidence budget: what the reader actually gets to see, measured by the same ledger
-on every question.
+common reader and judge; the exact rubrics are in the
+[LoCoMo protocol](https://github.com/memoket/memoket-kite/blob/main/benchmarks/locomo/protocol.py)
+and
+[LongMemEval protocol](https://github.com/memoket/memoket-kite/blob/main/benchmarks/longmemeval/protocol.py).
+Reader context is the mean per-question evidence budget: what the reader actually
+gets to see, measured by the same ledger on every question.
 
-The table is not the claim. The artifact is. Each figure comes from a sealed run
-under the default configuration, with `gpt-4.1-mini` reading and judging and no
-ablation flags set. The whole run ships with the number: the commit it ran on,
-the corpus digest, the tokenizer, the plan cache, every answer, every verdict,
-and the score. Run `python -m benchmarks.reproduce.verify locomo` and it
-recomputes that score offline from the seal, without calling a model. If a number looks
-wrong to you, go and find the question it came from.
+Each figure comes from a reference run under the default configuration, with
+`gpt-4.1-mini` reading and judging and no ablation flags set. The reproduction
+contract pins the dataset revisions, protocols, model IDs, expected row counts,
+and reported scores. The provided scripts rebuild the evaluation locally from
+the official datasets with a configured compatible LLM endpoint.
 
 <details>
-<summary><b>How the sealing works</b></summary>
+<summary><b>How a local run is recorded</b></summary>
 <br>
 
-Every run writes a manifest naming the exact commit, corpus digest, tokenizer,
-and plan-cache digest it ran under. Judging then seals the answers, the verdicts,
-and the score into a second manifest keyed to the first. Packaging refuses to
-ship anything whose seal does not verify, whose tree has drifted since
-measurement, or whose declared score the sealed rows do not recompute to.
-Details in the [benchmark guide](benchmarks/README.md) and
-[reproducibility notes](docs/reproducibility.md); the benchmark corpora keep
-their own licences, spelled out in [`LICENSE-DATA.md`](LICENSE-DATA.md).
+Every rebuilt run writes a local manifest naming the exact commit, corpus
+digest, tokenizer, and plan-cache digest it used. Judging records the answers,
+verdicts, and score in a second manifest keyed to the first. A completed run can
+validate that seal and recompute its metrics offline; the reference verifier
+also checks the manifest-declared paths, counts, and reported aggregate. Details
+are in the
+[benchmark guide](https://github.com/memoket/memoket-kite/blob/main/benchmarks/README.md)
+and
+[reproducibility notes](https://github.com/memoket/memoket-kite/blob/main/docs/reproducibility.md);
+the benchmark corpora keep their own licences, spelled out in
+[`LICENSE-DATA.md`](https://github.com/memoket/memoket-kite/blob/main/LICENSE-DATA.md).
 
 </details>
 
-<img src="assets/string-a.svg" width="100%" alt="">
+<img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/string-a.svg" width="100%" alt="">
 
 ## 🔗 Integrations
 
@@ -255,13 +260,13 @@ Cursor, OpenCode, and more) are next on the roadmap.
 Want yours first? [Tell us on Discord](https://discord.com/invite/tFh4nur4Vn).
 
 <p align="center">
-  <img src="assets/memoket-anchor.png" width="100%" alt="the string ties into Memoket">
+  <img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/memoket-anchor.png" width="100%" alt="the string ties into Memoket">
 </p>
 
 <p align="center">
-  <a href="https://apps.apple.com/us/app/memoket/id6758686146"><img src="assets/badge-appstore.png" height="50" alt="Download on the App Store"></a>
+  <a href="https://apps.apple.com/us/app/memoket/id6758686146"><img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/badge-appstore.png" height="50" alt="Download on the App Store"></a>
   &nbsp;&nbsp;
-  <a href="https://play.google.com/store/apps/details?id=com.ssheng.memoket"><img src="assets/badge-googleplay.png" height="50" alt="Get it on Google Play"></a>
+  <a href="https://play.google.com/store/apps/details?id=com.ssheng.memoket"><img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/badge-googleplay.png" height="50" alt="Get it on Google Play"></a>
 </p>
 
 ## ✨ Experience KITE with Memoket
@@ -274,7 +279,9 @@ in their words.
 
 Memoket captures memories; KITE is the memory itself.
 
-https://github.com/user-attachments/assets/7139ed0a-84e8-4e26-b7e8-c4cf09386cc4
+<p align="center">
+  <a href="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/KITE-inside-MemoChat.mp4"><strong>Watch KITE inside MemoChat →</strong></a>
+</p>
 
 <p align="center">
   <a href="https://memoket.ai/pages/use-cases"><strong>See more of Memoket in action →</strong></a>
@@ -283,8 +290,8 @@ https://github.com/user-attachments/assets/7139ed0a-84e8-4e26-b7e8-c4cf09386cc4
 ## 🤝 Community
 
 - 💬 [Discord](https://discord.com/invite/tFh4nur4Vn) for questions, ideas, and integration requests
-- 🐛 [Issues](https://github.com/memoket/kite/issues) for bugs and feature requests
-- 🔧 [Contributing guide](CONTRIBUTING.md) · 🔒 [Security policy](SECURITY.md)
+- 🐛 [Issues](https://github.com/memoket/memoket-kite/issues) for bugs and feature requests
+- 🔧 [Contributing guide](https://github.com/memoket/memoket-kite/blob/main/CONTRIBUTING.md) · 🔒 [Security policy](https://github.com/memoket/memoket-kite/blob/main/SECURITY.md)
 
 ## 📖 Citation
 
@@ -293,7 +300,8 @@ release. Until then, please cite this repository.
 
 ## 📄 License
 
-KITE by Memoket is released under the [Apache License 2.0](LICENSE).
+KITE by Memoket is released under the
+[Apache License 2.0](https://github.com/memoket/memoket-kite/blob/main/LICENSE).
 
 <br>
 
