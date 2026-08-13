@@ -5,9 +5,8 @@ cd "$(dirname "$0")/../.."
 
 MODEL="${MODEL:-gpt-4.1-mini}"
 WORKERS="${WORKERS:-4}"
-# The tag the packager will read, taken from the manifest so a run made by
-# following this script is the run the release ships. Overriding TAG produces
-# results the packager ignores, which is what an experiment wants.
+# The reference tag is taken from the manifest so the default local run uses
+# the documented result path. Override TAG to keep an experiment separate.
 TAG="${TAG:-$("${PYTHON_BOOTSTRAP:-$(command -v python3 || command -v python)}" -c "
 import json, pathlib, re, sys
 manifest = json.loads(pathlib.Path('benchmarks/reproduce/manifest.json').read_text())

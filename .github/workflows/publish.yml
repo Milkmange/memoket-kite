@@ -1,0 +1,130 @@
+name: Publish to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish from the matching v* tag (for example, 0.1.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-pypi
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and verify distributions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: refs/tags/v${{ inputs.version }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Verify release source and metadata
+        env:
+          EXPECTED_VERSION: ${{ inputs.version }}
+        run: |
+          python - <<'PY'
+          import os
+          import subprocess
+          import tomllib
+
+          with open("pyproject.toml", "rb") as stream:
+              project = tomllib.load(stream)["project"]
+
+          expected_version = os.environ["EXPECTED_VERSION"]
+          release_tag = f"v{expected_version}"
+          if os.environ["GITHUB_REF"] != "refs/heads/main":
+              raise SystemExit(
+                  f"publishing workflow must run from main, not {os.environ['GITHUB_REF']}"
+              )
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tag_commit = subprocess.check_output(
+              ["git", "rev-parse", f"refs/tags/{release_tag}^{{commit}}"], text=True
+          ).strip()
+          if head != tag_commit or head != os.environ["GITHUB_SHA"]:
+              raise SystemExit(
+                  f"{release_tag}, checked-out source, and main must identify one commit"
+              )
+          if project["name"] != "memoket-kite":
+              raise SystemExit(f"unexpected project name: {project['name']}")
+          if project["version"] != expected_version:
+              raise SystemExit(
+                  f"project version {project['version']} does not match "
+                  f"requested version {expected_version}"
+              )
+          PY
+      - name: Build distributions
+        run: |
+          python -m pip install "build==1.5.0" "twine==7.0.0"
+          python -m build
+      - name: Check distributions
+        run: |
+          python -m twine check --strict dist/*
+          python - <<'PY'
+          from pathlib import Path
+
+          wheels = list(Path("dist").glob("*.whl"))
+          sdists = list(Path("dist").glob("*.tar.gz"))
+          if len(wheels) != 1 or len(sdists) != 1:
+              raise SystemExit(
+                  f"expected one wheel and one sdist, found {len(wheels)} and {len(sdists)}"
+              )
+          PY
+      - name: Smoke-test wheel
+        env:
+          EXPECTED_VERSION: ${{ inputs.version }}
+        run: |
+          python -m venv /tmp/memoket-kite-wheel
+          /tmp/memoket-kite-wheel/bin/pip install --quiet dist/*.whl
+          cd /tmp
+          /tmp/memoket-kite-wheel/bin/python - <<'PY'
+          import os
+          from importlib.metadata import version
+
+          import memoket_kite
+
+          expected = os.environ["EXPECTED_VERSION"]
+          assert version("memoket-kite") == expected
+          assert memoket_kite.__version__ == expected
+          assert memoket_kite.Memory
+          PY
+          /tmp/memoket-kite-wheel/bin/pip check
+      - name: Store distributions
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: python-package-distributions
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish distributions
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/p/memoket-kite
+    permissions:
+      id-token: write
+    steps:
+      - name: Retrieve distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: python-package-distributions
+          path: dist/
+          digest-mismatch: error
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: dist/

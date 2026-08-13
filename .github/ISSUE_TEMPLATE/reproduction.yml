@@ -1,8 +1,20 @@
 name: Benchmark reproduction
-description: Report a discrepancy using the pinned reproduction contract
+description: Report a discrepancy from a benchmark reproduction run
 title: "[Reproduction]: "
-labels: [reproducibility]
+labels: [bug]
 body:
+  - type: markdown
+    attributes:
+      value: Please remove credentials and do not attach raw benchmark datasets.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I followed the repository's benchmark reproduction instructions.
+          required: true
+        - label: I searched the existing issues for this discrepancy.
+          required: true
   - type: input
     id: commit
     attributes:
@@ -20,7 +32,7 @@ body:
     id: manifest
     attributes:
       label: Manifest and hashes
-      description: Paste dataset revision/hash, artifact hash, and model IDs. Do not attach raw datasets.
+      description: Paste the dataset revision and SHA256, model IDs, and local manifest or artifact hashes.
     validations:
       required: true
   - type: textarea
@@ -33,5 +45,13 @@ body:
     id: discrepancy
     attributes:
       label: Observed discrepancy
+      description: Include both the expected and observed result.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, operating system, and relevant package versions.
     validations:
       required: true

@@ -31,4 +31,5 @@ the file in the current shell.
 The wheel must contain only `memoket_kite` plus standard distribution metadata.
 Benchmark modules must import without starting work, and all six benchmark
 entry points must support `--help` without datasets or credentials. See
-[`reproducibility.md`](reproducibility.md) for release artifact validation.
+[`reproducibility.md`](reproducibility.md) for local benchmark reproduction and
+validation.

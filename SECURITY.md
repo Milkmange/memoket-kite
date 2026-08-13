@@ -8,7 +8,7 @@ branch while KITE remains pre-1.0.
 ## Report a vulnerability
 
 Please use GitHub's private vulnerability reporting for
-[`memoket/KITE`](https://github.com/memoket/KITE/security/advisories/new).
+[`memoket/memoket-kite`](https://github.com/memoket/memoket-kite/security/advisories/new).
 Do not open a public issue containing credentials, private conversation data,
 or an unpatched exploit. Include affected versions, reproduction steps, and the
 expected impact. We will acknowledge a report as soon as maintainers can triage

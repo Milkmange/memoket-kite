@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussions
+    url: https://discord.com/invite/tFh4nur4Vn
+    about: Ask usage questions and discuss integrations with the community.
+  - name: Security vulnerability
+    url: https://github.com/memoket/memoket-kite/security/advisories/new
+    about: Report security vulnerabilities privately.

@@ -1676,7 +1676,7 @@ def test_a_release_refuses_a_distribution_built_from_another_tree(tmp_path, monk
         ).encode() + body
         if old_repository:
             payload = payload.replace(
-                b"Repository, https://github.com/memoket/KITE",
+                b"Repository, https://github.com/memoket/memoket-kite",
                 b"Repository, https://github.com/old-owner/old-name",
             )
         return payload

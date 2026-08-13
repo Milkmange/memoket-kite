@@ -21,7 +21,7 @@ def test_release_manifest_pins_its_datasets_and_declares_the_scores_it_claims():
     checks out.
     """
     manifest = load_manifest()
-    assert manifest["repository"] == "https://github.com/memoket/KITE"
+    assert manifest["repository"] == "https://github.com/memoket/memoket-kite"
     assert set(manifest["datasets"]) == {"locomo", "longmemeval"}
     for dataset in manifest["datasets"].values():
         assert len(dataset["revision"]) == 40
@@ -30,6 +30,7 @@ def test_release_manifest_pins_its_datasets_and_declares_the_scores_it_claims():
         assert dataset["license"] and dataset["derived_artifacts"]
     assert manifest["release"]["status"] != "verified"
     assert manifest["release"]["git_commit"] is None
+    assert manifest["models"]["resolved_snapshot"] == "gpt-4.1-mini-2025-04-14"
     for item in manifest["benchmarks"].values():
         assert isinstance(item["score"], float) and 0.0 < item["score"] <= 1.0
         assert item["asset"].startswith("memoket-kite-")

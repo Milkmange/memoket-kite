@@ -80,7 +80,7 @@ not enable either stage.
 
 ## Reproduction paths
 
-For a full run, configure the LLM endpoint and run the two scripts under
-`reproduce/`. For a five-minute verification, download the GitHub Release
-artifacts and recompute the published metrics without an LLM. See
+For a full local reproduction, configure the LLM endpoint and run the two
+scripts under `reproduce/`. The workflow fetches the pinned upstream datasets
+and rebuilds the evaluation under the local `artifacts/` tree. See
 [`docs/reproducibility.md`](../docs/reproducibility.md) for the complete contract.

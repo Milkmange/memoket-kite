@@ -1,0 +1,45 @@
+name: Feature request
+description: Suggest a focused improvement to KITE
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues for this request.
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Memory API, extraction, retrieval, answering, Codebook format, benchmark, documentation, packaging]
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Describe the user need this proposal addresses.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the smallest useful change and, if relevant, show an API example.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+    validations:
+      required: false

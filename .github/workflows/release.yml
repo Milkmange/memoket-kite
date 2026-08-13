@@ -5,126 +5,63 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: github-release-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
-  distributions:
+  release:
+    name: Prepare GitHub Release
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          # The ancestor test below needs real history, not a shallow fetch.
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-          cache: pip
-      - name: Refuse a tag that disagrees with the project version
+      - name: Verify tag and project version
         run: |
-          version="$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")"
-          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
-            echo "::error::tag ${GITHUB_REF_NAME} does not match project version v${version}; retag or bump pyproject.toml first"
-            exit 1
-          fi
-      - run: python -m pip install build
-      - run: python -m build
-      # Created as a draft: this job runs on the tag push, before anyone has
-      # seen a test result for it, and a draft is invisible until the
-      # maintainer publishes it alongside the sealed assets.
-      - name: Create the release as a draft if it does not exist
+          python - <<'PY'
+          import os
+          import tomllib
+
+          with open("pyproject.toml", "rb") as stream:
+              project = tomllib.load(stream)["project"]
+
+          tag = os.environ["GITHUB_REF_NAME"]
+          expected_tag = f"v{project['version']}"
+
+          if project["name"] != "memoket-kite":
+              raise SystemExit(f"unexpected project name: {project['name']}")
+          if tag != expected_tag:
+              raise SystemExit(
+                  f"tag {tag} does not match project version {expected_tag}"
+              )
+          PY
+      - name: Create draft release if absent
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
-            gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes --draft
-      - name: Upload only distributions the sealed manifest pins
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # The maintainer's `benchmarks.reproduce.package` run is the only
-          # producer of release artifacts; its manifest pins their SHA-256.
-          # CI builds dist/ solely to prove the tag builds and to fill in a
-          # pinned file whose bytes it reproduced exactly. Without a manifest
-          # on the release, nothing is uploaded: on a fresh tag the old
-          # fallback raced the maintainer and published an unsealed build
-          # under the same asset names.
-          if ! gh release download "${GITHUB_REF_NAME}" --pattern artifact-manifest.json --output /tmp/manifest.json 2>/dev/null; then
-            echo "::notice::no sealed manifest on ${GITHUB_REF_NAME} yet; run benchmarks.reproduce.package and upload its assets, then re-run this job to backfill"
+          if gh release view "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release ${GITHUB_REF_NAME} already exists"
             exit 0
           fi
-          # The packager's rule (benchmarks/reproduce/package.py,
-          # _released_commit): the measured commit must be an ANCESTOR of the
-          # tag, not equal to it — writing the score into the README is itself
-          # a commit that lands after the measurement.
-          measured="$(python3 -c "import json;print(json.load(open('/tmp/manifest.json'))['release']['git_commit'])")"
-          if ! git merge-base --is-ancestor "$measured" "$GITHUB_SHA"; then
-            echo "::error::manifest was measured at $measured, which is not an ancestor of ${GITHUB_SHA}; re-measure before tagging"
-            exit 1
-          fi
-          # The tree the shipped distributions were built from must be exactly
-          # the tree this tag names — an ancestor is not good enough here, or
-          # the wheel on the release and the source at the tag need never have
-          # matched.
-          source="$(python3 -c "import json;print(json.load(open('/tmp/manifest.json'))['release'].get('source_commit',''))")"
-          if [ -z "$source" ]; then
-            echo "::error::the sealed manifest records no source_commit; re-run benchmarks.reproduce.package"
-            exit 1
-          fi
-          if [ "$source" != "$GITHUB_SHA" ]; then
-            echo "::error::distributions were packaged from $source but the tag is ${GITHUB_SHA}; re-package at the tagged commit"
-            exit 1
-          fi
-          python3 - <<'PY'
-          import json
-          import os
 
-          with open("/tmp/manifest.json", encoding="utf-8") as stream:
-              manifest = json.load(stream)
-          release = manifest.get("release") or {}
-          # git_commit is deliberately NOT compared for equality here: the
-          # packager's rule (benchmarks/reproduce/package.py, _released_commit)
-          # is that the measured commit must be an ANCESTOR of HEAD with no
-          # measured path moved since — writing the score into the README is
-          # itself a commit that lands after the measurement. Requiring
-          # equality made every correctly packaged release fail in CI. The
-          # ancestor check runs as a separate step below.
-          expected = {
-              "version": os.environ["GITHUB_REF_NAME"],
-              "status": "verified",
-          }
-          mismatches = [
-              f"{key}={release.get(key)!r}, expected {value!r}"
-              for key, value in expected.items()
-              if release.get(key) != value
-          ]
-          if mismatches:
-              raise SystemExit(
-                  "sealed manifest does not belong to this tag: " + "; ".join(mismatches)
-              )
-          if not isinstance(release.get("files"), dict) or not release["files"]:
-              raise SystemExit("sealed manifest has no release.files digest map")
-          PY
-          for path in dist/*; do
-            name="$(basename "$path")"
-            pinned="$(python3 -c "import json,sys; print(json.load(open('/tmp/manifest.json'))['release']['files'].get('$name',''))")"
-            actual="$(sha256sum "$path" | cut -d' ' -f1)"
-            if [ -z "$pinned" ]; then
-              echo "::error::$name is not pinned by the sealed manifest; upload the maintainer-built dist instead of the CI build"
-              exit 1
-            fi
-            if [ "$pinned" != "$actual" ]; then
-              echo "::notice::$name from CI differs from the pinned digest; skipping upload (the maintainer's build is the release artifact)"
-              continue
-            fi
-            if gh release download "${GITHUB_REF_NAME}" --pattern "$name" --output /tmp/existing 2>/dev/null; then
-              if ! cmp -s "$path" /tmp/existing; then
-                echo "::error::$name already on the release with different bytes; refusing to replace a sealed asset"
-                exit 1
-              fi
-              echo "$name already present and identical; leaving it"
-              rm -f /tmp/existing
-            else
-              gh release upload "${GITHUB_REF_NAME}" "$path"
-            fi
-          done
+          if gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --verify-tag \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes \
+            --draft; then
+            exit 0
+          fi
+
+          gh release view "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" >/dev/null

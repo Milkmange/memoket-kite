@@ -58,7 +58,7 @@ def _safe_extract(archive: Path, destination: Path) -> None:
 
 def prepare_artifacts(manifest: dict) -> None:
     release = manifest["release"]["version"]
-    base_url = f"https://github.com/memoket/KITE/releases/download/{release}"
+    base_url = f"https://github.com/memoket/memoket-kite/releases/download/{release}"
     download_dir = ARTIFACTS_ROOT / "downloads" / release
     for name, benchmark in manifest["benchmarks"].items():
         expected = benchmark.get("asset_sha256")
