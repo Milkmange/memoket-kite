@@ -5,8 +5,7 @@
 ### Follow the thread, not the nearest match.
 
 KITE turns conversations into structured, source-backed facts, then answers questions with citations to the exact source moments.
-Open-source and vector-free, KITE achieves **🥇93.51% on LoCoMo and 🥇85.60% on LongMemEval-S** with an average of only only **~1.6K** reader tokens per question.
-
+Open-source and vector-free, KITE achieves **🥇 93.51% on LoCoMo and 🥇 85.60% on LongMemEval-S**, using gpt-4.1-mini throughout the evaluation with an average reader context of only **~1.6K tokens per question**.
 <a href="https://memoket.ai/"><img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/memoket-website-badge-navy.svg" alt="Memoket website"></a>
 <a href="https://discord.com/invite/tFh4nur4Vn"><img src="https://img.shields.io/badge/-Discord-232B3A?style=for-the-badge&logo=discord&logoColor=white" alt="Join Memoket on Discord"></a>
 <a href="https://x.com/Memoket_AI"><img src="https://img.shields.io/badge/-X-232B3A?style=for-the-badge&logo=x&logoColor=white" alt="Follow Memoket on X"></a>
