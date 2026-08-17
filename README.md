@@ -4,8 +4,8 @@
 
 ### Follow the thread, not the nearest match.
 
-KITE by Memoket turns conversations into structured, source-backed facts, then answers questions
-with the exact moment they came from attached.
+KITE turns conversations into structured, source-backed facts, then answers questions with citations to the exact source moments.
+Open-source and vector-free, KITE achieves **🥇93.51% on LoCoMo and 🥇85.60% on LongMemEval-S** with an average of only only **~1.6K** reader tokens per question.
 
 <a href="https://memoket.ai/"><img src="https://raw.githubusercontent.com/memoket/memoket-kite/main/assets/memoket-website-badge-navy.svg" alt="Memoket website"></a>
 <a href="https://discord.com/invite/tFh4nur4Vn"><img src="https://img.shields.io/badge/-Discord-232B3A?style=for-the-badge&logo=discord&logoColor=white" alt="Join Memoket on Discord"></a>
